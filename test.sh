@@ -24,8 +24,13 @@ docker run -d \
 	-p $port:$port \
 	-e MONGO_INITDB_ROOT_USERNAME=$user \
 	-e MONGO_INITDB_ROOT_PASSWORD=$password \
-	mongo:3-xenial
-trap 'docker stop test-$plugin; docker rm test-$plugin; exit' EXIT
+	mongo:6.0.4
+trap 'docker stop test-$plugin; docker rm test-$plugin; exit 1' 1 2 3 15
 sleep 10
 
-exec $plugin -port $port -username=$user -password $password
+$plugin -port $port -username=$user -password $password
+status=$?
+
+docker stop "test-$plugin"
+docker rm "test-$plugin"
+exit $status

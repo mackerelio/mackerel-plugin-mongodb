@@ -1,6 +1,7 @@
 package mpmongodb
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -11,11 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
 	"github.com/hashicorp/go-version"
 	mp "github.com/mackerelio/go-mackerel-plugin-helper"
 	"github.com/mackerelio/golib/logging"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -211,23 +213,30 @@ type MongoDBPlugin struct {
 }
 
 func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
-	mongoDBDialInfo := &mgo.DialInfo{
-		Addrs:    []string{m.URL},
-		Username: m.Username,
-		Password: m.Password,
-		Source:   m.Source,
-		Direct:   true,
-		Timeout:  10 * time.Second,
+	ctx := context.Background()
+	auth := options.Credential{
+		Username:   m.Username,
+		Password:   m.Password,
+		AuthSource: m.Source,
 	}
-	session, err := mgo.DialWithInfo(mongoDBDialInfo)
+	timeout := 10 * time.Second
+	opts := options.Client().ApplyURI(m.URL).SetDirect(true).SetAuth(auth).SetTimeout(timeout)
+
+	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
 
-	defer session.Close()
-	session.SetMode(mgo.Eventual, true)
-	serverStatus := bson.M{}
-	if err := session.Run("serverStatus", &serverStatus); err != nil {
+	defer func() {
+		if err := client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	var serverStatus bson.M
+	command := bson.D{{Key: "serverStatus", Value: 1}}
+	err = client.Database("admin").RunCommand(ctx, command).Decode(&serverStatus)
+	if err != nil {
 		return nil, err
 	}
 	if m.Verbose {
@@ -334,7 +343,7 @@ func Do() {
 
 	var mongodb MongoDBPlugin
 	mongodb.Verbose = *optVerbose
-	mongodb.URL = net.JoinHostPort(*optHost, *optPort)
+	mongodb.URL = fmt.Sprintf("mongodb://%s", net.JoinHostPort(*optHost, *optPort))
 	mongodb.Username = *optUser
 	mongodb.Password = *optPass
 	mongodb.Source = *optSource
