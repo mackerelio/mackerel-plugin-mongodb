@@ -1,4 +1,4 @@
-module github.com/mackerelio/mackerel-agent-plugins
+module github.com/mackerelio/mackerel-plugin-mongodb
 
 go 1.18
 
