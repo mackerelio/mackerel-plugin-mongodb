@@ -22,23 +22,6 @@ import (
 
 var logger = logging.GetLogger("metrics.plugin.mongodb")
 
-// backgroundFlushing information only appears for instances that use the MMAPv1 storage engine.
-// and the MMAPv1 is no longer the default storage engine in MongoDB 3.2
-// ref. https://docs.mongodb.org/manual/reference/command/serverStatus/#server-status-backgroundflushing
-
-//Adapt to version 3.2 or higher.
-//Check in version 3.6.
-
-var metricPlace32 = map[string][]string{
-	"connections_current": {"connections", "current"},
-	"opcounters_insert":   {"opcounters", "insert"},
-	"opcounters_query":    {"opcounters", "query"},
-	"opcounters_update":   {"opcounters", "update"},
-	"opcounters_delete":   {"opcounters", "delete"},
-	"opcounters_getmore":  {"opcounters", "getmore"},
-	"opcounters_command":  {"opcounters", "command"},
-}
-
 func getFloatValue(s map[string]interface{}, keys []string) (float64, error) {
 	var val float64
 	sm := s
@@ -120,9 +103,20 @@ func (m MongoDBPlugin) FetchMetrics() (map[string]interface{}, error) {
 
 func (m MongoDBPlugin) parseStatus(serverStatus bson.M) (map[string]interface{}, error) {
 	stat := make(map[string]interface{})
-	metricPlace := &metricPlace32
 
-	for k, v := range *metricPlace {
+	//Adapt to version 3.2 or higher.
+	//Check in version 3.6.
+	metricPlace := map[string][]string{
+		"connections_current": {"connections", "current"},
+		"opcounters_insert":   {"opcounters", "insert"},
+		"opcounters_query":    {"opcounters", "query"},
+		"opcounters_update":   {"opcounters", "update"},
+		"opcounters_delete":   {"opcounters", "delete"},
+		"opcounters_getmore":  {"opcounters", "getmore"},
+		"opcounters_command":  {"opcounters", "command"},
+	}
+
+	for k, v := range metricPlace {
 		val, err := getFloatValue(serverStatus, v)
 		if err != nil {
 			logger.Warningf("Cannot fetch metric %s: %s", v, err)
