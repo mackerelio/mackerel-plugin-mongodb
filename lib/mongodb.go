@@ -7,12 +7,10 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/hashicorp/go-version"
 	mp "github.com/mackerelio/go-mackerel-plugin-helper"
 	"github.com/mackerelio/golib/logging"
 	"go.mongodb.org/mongo-driver/bson"
@@ -23,79 +21,6 @@ import (
 )
 
 var logger = logging.GetLogger("metrics.plugin.mongodb")
-
-func (m MongoDBPlugin) defaultGraphdef() map[string]mp.Graphs {
-	labelPrefix := m.LabelPrefix()
-
-	return map[string]mp.Graphs{
-		"background_flushing": {
-			Label: labelPrefix + " Command",
-			Unit:  "float",
-			Metrics: []mp.Metrics{
-				{Name: "duration_ms", Label: "Duration in ms", Diff: true, Type: "uint64"},
-			},
-		},
-		"connections": {
-			Label: labelPrefix + " Connections",
-			Unit:  "integer",
-			Metrics: []mp.Metrics{
-				{Name: "connections_current", Label: "current"},
-			},
-		},
-		"index_counters.btree": {
-			Label: labelPrefix + " Index Counters Btree",
-			Unit:  "integer",
-			Metrics: []mp.Metrics{
-				{Name: "btree_hits", Label: "hits", Diff: true, Type: "uint64"},
-			},
-		},
-		"opcounters": {
-			Label: labelPrefix + " opcounters",
-			Unit:  "integer",
-			Metrics: []mp.Metrics{
-				{Name: "opcounters_insert", Label: "Insert", Diff: true, Type: "uint64"},
-				{Name: "opcounters_query", Label: "Query", Diff: true, Type: "uint64"},
-				{Name: "opcounters_update", Label: "Update", Diff: true, Type: "uint64"},
-				{Name: "opcounters_delete", Label: "Delete", Diff: true, Type: "uint64"},
-				{Name: "opcounters_getmore", Label: "Getmore", Diff: true, Type: "uint64"},
-				{Name: "opcounters_command", Label: "Command", Diff: true, Type: "uint64"},
-			},
-		},
-	}
-}
-
-func (m MongoDBPlugin) graphdef30() map[string]mp.Graphs {
-	labelPrefix := m.LabelPrefix()
-
-	return map[string]mp.Graphs{
-		"background_flushing": {
-			Label: labelPrefix + " Command",
-			Unit:  "float",
-			Metrics: []mp.Metrics{
-				{Name: "duration_ms", Label: "Duration in ms", Diff: true, Type: "uint64"},
-			},
-		},
-		"connections": {
-			Label: labelPrefix + " Connections",
-			Unit:  "integer",
-			Metrics: []mp.Metrics{
-				{Name: "connections_current", Label: "current"},
-			},
-		},
-		"opcounters": {
-			Label: labelPrefix + " opcounters",
-			Unit:  "integer",
-			Metrics: []mp.Metrics{
-				{Name: "opcounters_insert", Label: "Insert", Diff: true, Type: "uint64"},
-				{Name: "opcounters_query", Label: "Query", Diff: true, Type: "uint64"},
-				{Name: "opcounters_update", Label: "Update", Diff: true, Type: "uint64"},
-				{Name: "opcounters_delete", Label: "Delete", Diff: true, Type: "uint64"},
-				{Name: "opcounters_getmore", Label: "Getmore", Diff: true, Type: "uint64"},
-				{Name: "opcounters_command", Label: "Command", Diff: true, Type: "uint64"},
-			},
-		},
-	}
-}
 
 // Adapt to version 3.2 or higher.
 // Check in version 3.6.
@@ -123,43 +48,6 @@ func (m MongoDBPlugin) graphdef32() map[string]mp.Graphs {
 			},
 		},
 	}
-}
-
-var metricPlace22 = map[string][]string{
-	"duration_ms":         {"backgroundFlushing", "total_ms"},
-	"connections_current": {"connections", "current"},
-	"btree_hits":          {"indexCounters", "btree", "hits"},
-	"opcounters_insert":   {"opcounters", "insert"},
-	"opcounters_query":    {"opcounters", "query"},
-	"opcounters_update":   {"opcounters", "update"},
-	"opcounters_delete":   {"opcounters", "delete"},
-	"opcounters_getmore":  {"opcounters", "getmore"},
-	"opcounters_command":  {"opcounters", "command"},
-}
-
-var metricPlace24 = map[string][]string{
-	"duration_ms":         {"backgroundFlushing", "total_ms"},
-	"connections_current": {"connections", "current"},
-	"btree_hits":          {"indexCounters", "hits"},
-	"opcounters_insert":   {"opcounters", "insert"},
-	"opcounters_query":    {"opcounters", "query"},
-	"opcounters_update":   {"opcounters", "update"},
-	"opcounters_delete":   {"opcounters", "delete"},
-	"opcounters_getmore":  {"opcounters", "getmore"},
-	"opcounters_command":  {"opcounters", "command"},
-}
-
-// indexCounters is removed from mongodb 3.0.
-// ref. http://stackoverflow.com/questions/29428793/where-is-the-indexcounter-in-db-serverstatus-on-mongodb-3-0
-var metricPlace30 = map[string][]string{
-	"duration_ms":         {"backgroundFlushing", "total_ms"},
-	"connections_current": {"connections", "current"},
-	"opcounters_insert":   {"opcounters", "insert"},
-	"opcounters_query":    {"opcounters", "query"},
-	"opcounters_update":   {"opcounters", "update"},
-	"opcounters_delete":   {"opcounters", "delete"},
-	"opcounters_getmore":  {"opcounters", "getmore"},
-	"opcounters_command":  {"opcounters", "command"},
 }
 
 // backgroundFlushing information only appears for instances that use the MMAPv1 storage engine.
@@ -258,30 +146,9 @@ func (m MongoDBPlugin) FetchMetrics() (map[string]interface{}, error) {
 	return m.parseStatus(serverStatus)
 }
 
-func (m MongoDBPlugin) getVersion(serverStatus bson.M) string {
-	if reflect.TypeOf(serverStatus["version"]).String() == "string" {
-		version := serverStatus["version"].(string)
-		return version
-	}
-	return ""
-}
-
 func (m MongoDBPlugin) parseStatus(serverStatus bson.M) (map[string]interface{}, error) {
 	stat := make(map[string]interface{})
-	metricPlace := &metricPlace22
-
-	cv, err := version.NewVersion(m.getVersion(serverStatus))
-	if err != nil {
-		return stat, err
-	}
-
-	if v, _ := version.NewVersion("3.2"); cv.Equal(v) || cv.GreaterThan(v) {
-		metricPlace = &metricPlace32
-	} else if v, _ := version.NewVersion("3.0"); cv.Equal(v) || cv.GreaterThan(v) {
-		metricPlace = &metricPlace30
-	} else if v, _ := version.NewVersion("2.4"); cv.Equal(v) || cv.GreaterThan(v) {
-		metricPlace = &metricPlace24
-	}
+	metricPlace := &metricPlace32
 
 	for k, v := range *metricPlace {
 		val, err := getFloatValue(serverStatus, v)
@@ -297,22 +164,7 @@ func (m MongoDBPlugin) parseStatus(serverStatus bson.M) (map[string]interface{},
 
 // GraphDefinition interface for mackerelplugin
 func (m MongoDBPlugin) GraphDefinition() map[string]mp.Graphs {
-	serverStatus, err := m.fetchStatus()
-	if err != nil {
-		return m.defaultGraphdef()
-	}
-
-	cv, err := version.NewVersion(m.getVersion(serverStatus))
-	if err != nil {
-		return m.defaultGraphdef()
-	}
-	if v, _ := version.NewVersion("3.2"); cv.Equal(v) || cv.GreaterThan(v) {
-		return m.graphdef32()
-	} else if v, _ := version.NewVersion("3.0"); cv.Equal(v) || cv.GreaterThan(v) {
-		return m.graphdef30()
-	}
-
-	return m.defaultGraphdef()
+	return m.graphdef32()
 }
 
 const defaultPrefix = "mongodb"

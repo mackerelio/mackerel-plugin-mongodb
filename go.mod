@@ -3,7 +3,6 @@ module github.com/mackerelio/mackerel-plugin-mongodb
 go 1.18
 
 require (
-	github.com/hashicorp/go-version v1.6.0
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.2
 	github.com/mackerelio/golib v1.2.1
 	github.com/stretchr/testify v1.8.1
