@@ -22,34 +22,6 @@ import (
 
 var logger = logging.GetLogger("metrics.plugin.mongodb")
 
-// Adapt to version 3.2 or higher.
-// Check in version 3.6.
-func (m MongoDBPlugin) graphdef32() map[string]mp.Graphs {
-	labelPrefix := m.LabelPrefix()
-
-	return map[string]mp.Graphs{
-		"connections": {
-			Label: labelPrefix + " Connections",
-			Unit:  "integer",
-			Metrics: []mp.Metrics{
-				{Name: "connections_current", Label: "current"},
-			},
-		},
-		"opcounters": {
-			Label: labelPrefix + " opcounters",
-			Unit:  "integer",
-			Metrics: []mp.Metrics{
-				{Name: "opcounters_insert", Label: "Insert", Diff: true, Type: "uint64"},
-				{Name: "opcounters_query", Label: "Query", Diff: true, Type: "uint64"},
-				{Name: "opcounters_update", Label: "Update", Diff: true, Type: "uint64"},
-				{Name: "opcounters_delete", Label: "Delete", Diff: true, Type: "uint64"},
-				{Name: "opcounters_getmore", Label: "Getmore", Diff: true, Type: "uint64"},
-				{Name: "opcounters_command", Label: "Command", Diff: true, Type: "uint64"},
-			},
-		},
-	}
-}
-
 // backgroundFlushing information only appears for instances that use the MMAPv1 storage engine.
 // and the MMAPv1 is no longer the default storage engine in MongoDB 3.2
 // ref. https://docs.mongodb.org/manual/reference/command/serverStatus/#server-status-backgroundflushing
@@ -164,7 +136,31 @@ func (m MongoDBPlugin) parseStatus(serverStatus bson.M) (map[string]interface{},
 
 // GraphDefinition interface for mackerelplugin
 func (m MongoDBPlugin) GraphDefinition() map[string]mp.Graphs {
-	return m.graphdef32()
+	labelPrefix := m.LabelPrefix()
+
+	// Adapt to version 3.2 or higher.
+	// Check in version 3.6.
+	return map[string]mp.Graphs{
+		"connections": {
+			Label: labelPrefix + " Connections",
+			Unit:  "integer",
+			Metrics: []mp.Metrics{
+				{Name: "connections_current", Label: "current"},
+			},
+		},
+		"opcounters": {
+			Label: labelPrefix + " opcounters",
+			Unit:  "integer",
+			Metrics: []mp.Metrics{
+				{Name: "opcounters_insert", Label: "Insert", Diff: true, Type: "uint64"},
+				{Name: "opcounters_query", Label: "Query", Diff: true, Type: "uint64"},
+				{Name: "opcounters_update", Label: "Update", Diff: true, Type: "uint64"},
+				{Name: "opcounters_delete", Label: "Delete", Diff: true, Type: "uint64"},
+				{Name: "opcounters_getmore", Label: "Getmore", Diff: true, Type: "uint64"},
+				{Name: "opcounters_command", Label: "Command", Diff: true, Type: "uint64"},
+			},
+		},
+	}
 }
 
 const defaultPrefix = "mongodb"
