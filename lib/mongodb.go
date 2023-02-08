@@ -57,13 +57,15 @@ type MongoDBPlugin struct {
 
 func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
 	ctx := context.Background()
-	auth := options.Credential{
-		Username:   m.Username,
-		Password:   m.Password,
-		AuthSource: m.Source,
+	opts := options.Client().ApplyURI(m.URL).SetDirect(true).SetTimeout(10 * time.Second)
+	if m.Username != "" || m.Password != "" || m.Source != "" {
+		auth := options.Credential{
+			Username:   m.Username,
+			Password:   m.Password,
+			AuthSource: m.Source,
+		}
+		opts = opts.SetAuth(auth)
 	}
-	timeout := 10 * time.Second
-	opts := options.Client().ApplyURI(m.URL).SetDirect(true).SetAuth(auth).SetTimeout(timeout)
 
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
