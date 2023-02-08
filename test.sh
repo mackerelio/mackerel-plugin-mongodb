@@ -31,6 +31,17 @@ do
   trap 'docker stop test-$plugin; docker rm test-$plugin; exit 1' 1 2 3 15
   sleep 10
 
+  # url style
+  if $plugin -url mongodb://$user:$password@localhost:$port
+  then
+    echo OK: $v
+  else
+    status=$?
+    echo NG: $v
+  fi
+
+  sleep 5
+  # args style
   if $plugin -port $port -username=$user -password $password
   then
     echo OK: $v

@@ -53,18 +53,24 @@ type MongoDBPlugin struct {
 	Source    string
 	KeyPrefix string
 	Verbose   bool
+	RawURL    string
 }
 
 func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
 	ctx := context.Background()
-	opts := options.Client().ApplyURI(m.URL).SetDirect(true).SetTimeout(10 * time.Second)
-	if m.Username != "" || m.Password != "" || m.Source != "" {
-		auth := options.Credential{
-			Username:   m.Username,
-			Password:   m.Password,
-			AuthSource: m.Source,
+	var opts *options.ClientOptions
+	if m.RawURL != "" {
+		opts = options.Client().ApplyURI(m.RawURL)
+	} else {
+		opts = options.Client().ApplyURI(m.URL).SetDirect(true).SetTimeout(10 * time.Second)
+		if m.Username != "" || m.Password != "" || m.Source != "" {
+			auth := options.Credential{
+				Username:   m.Username,
+				Password:   m.Password,
+				AuthSource: m.Source,
+			}
+			opts = opts.SetAuth(auth)
 		}
-		opts = opts.SetAuth(auth)
 	}
 
 	client, err := mongo.Connect(ctx, opts)
@@ -175,11 +181,12 @@ func (m MongoDBPlugin) LabelPrefix() string {
 
 // Do the plugin
 func Do() {
-	optHost := flag.String("host", "localhost", "Hostname")
-	optPort := flag.String("port", "27017", "Port")
+	optHost := flag.String("host", "", "Hostname")
+	optPort := flag.String("port", "", "Port")
 	optUser := flag.String("username", "", "Username")
 	optPass := flag.String("password", os.Getenv("MONGODB_PASSWORD"), "Password")
 	optSource := flag.String("source", "", "authenticationDatabase")
+	optURL := flag.String("url", os.Getenv("MONGODB_URL"), "URL (exclusive)")
 	optVerbose := flag.Bool("v", false, "Verbose mode")
 	optTempfile := flag.String("tempfile", "", "Temp file name")
 	optKeyPrefix := flag.String("metric-key-prefix", "", "Metric key prefix")
@@ -187,10 +194,24 @@ func Do() {
 
 	var mongodb MongoDBPlugin
 	mongodb.Verbose = *optVerbose
+
+	mongodb.RawURL = *optURL
+
+	if *optURL != "" && (*optHost != "" || *optPort != "" || *optUser != "" || *optPass != "" || *optSource != "") {
+		fmt.Println("-url is exclusive.")
+		os.Exit(1)
+	}
+	if *optHost == "" {
+		*optHost = "localhost"
+	}
+	if *optPort == "" {
+		*optPort = "27017"
+	}
 	mongodb.URL = fmt.Sprintf("mongodb://%s", net.JoinHostPort(*optHost, *optPort))
 	mongodb.Username = *optUser
 	mongodb.Password = *optPass
 	mongodb.Source = *optSource
+
 	mongodb.KeyPrefix = *optKeyPrefix
 
 	helper := mp.NewMackerelPlugin(mongodb)
