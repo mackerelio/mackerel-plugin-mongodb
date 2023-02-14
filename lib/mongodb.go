@@ -186,7 +186,7 @@ func Do() {
 	optUser := flag.String("username", "", "Username")
 	optPass := flag.String("password", os.Getenv("MONGODB_PASSWORD"), "Password")
 	optSource := flag.String("source", "", "authenticationDatabase")
-	optURL := flag.String("url", os.Getenv("MONGODB_URL"), "URL (exclusive)")
+	optURL := flag.String("url", os.Getenv("MONGODB_URL"), "URL (mutually exclusive with these options: -host, -port, -username, -password, and -source)")
 	optVerbose := flag.Bool("v", false, "Verbose mode")
 	optTempfile := flag.String("tempfile", "", "Temp file name")
 	optKeyPrefix := flag.String("metric-key-prefix", "", "Metric key prefix")
@@ -198,7 +198,7 @@ func Do() {
 	mongodb.RawURL = *optURL
 
 	if *optURL != "" && (*optHost != "" || *optPort != "" || *optUser != "" || *optPass != "" || *optSource != "") {
-		fmt.Println("-url is exclusive.")
+		fmt.Println("-url option is mutually exclusive with these options: -host, -port, -username, -password, and -source")
 		os.Exit(1)
 	}
 	if *optHost == "" {
