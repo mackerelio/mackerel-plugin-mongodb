@@ -9,6 +9,10 @@ MongoDB custom metrics plugin for mackerel.io agent.
 mackerel-plugin-mongodb [-host=<host>] [-port=<port>] [-username=<username>] [-password=<password>] [-tempfile=<tempfile>] [-source=<authenticationDatabase>]
 ```
 
+```shell
+mackerel-plugin-mongodb [-url=<mongodb://.....>] [-tempfile=<tempfile>]
+```
+
 ## Example of mackerel-agent.conf
 
 ```

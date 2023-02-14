@@ -19,13 +19,38 @@ fi
 user=root
 password=passpass
 port=27017
-docker run -d \
+
+for v in 6.0 5.0 4.4 4.2 4.0 3.6
+do
+  docker run -d \
 	--name test-$plugin \
 	-p $port:$port \
 	-e MONGO_INITDB_ROOT_USERNAME=$user \
 	-e MONGO_INITDB_ROOT_PASSWORD=$password \
-	mongo:3-xenial
-trap 'docker stop test-$plugin; docker rm test-$plugin; exit' EXIT
-sleep 10
+	mongo:$v
+  trap 'docker stop test-$plugin; docker rm test-$plugin; exit 1' 1 2 3 15
+  sleep 10
 
-exec $plugin -port $port -username=$user -password $password
+  # url style
+  if $plugin -url mongodb://$user:$password@localhost:$port
+  then
+    echo OK: $v
+  else
+    status=$?
+    echo NG: $v
+  fi
+
+  sleep 5
+  # args style
+  if $plugin -port $port -username=$user -password $password
+  then
+    echo OK: $v
+  else
+    status=$?
+    echo NG: $v
+  fi
+
+  docker stop "test-$plugin"
+  docker rm "test-$plugin"
+done
+exit $status
