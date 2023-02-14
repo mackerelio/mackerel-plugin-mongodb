@@ -53,7 +53,7 @@ type MongoDBPlugin struct {
 	Source    string
 	KeyPrefix string
 	Verbose   bool
-	RawURL    string
+	RawURL    string // RawURL is preferred over URL
 }
 
 func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
