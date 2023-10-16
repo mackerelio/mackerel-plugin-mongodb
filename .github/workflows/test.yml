@@ -18,7 +18,7 @@ jobs:
   integration-test:
     uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.0.2
     with:
-      run: make test
+      run: make testmetric
       # For now, neither macos-12 or -13 runners does not have Docker toolbox.
       # Furthermore windows runners fails to authenticate the client with a credential.
       # Thus we drop these OSes from default OSes defined in setup-go-matrix workflow.
