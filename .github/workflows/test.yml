@@ -20,5 +20,6 @@ jobs:
     with:
       run: make test
       # For now, neither macos-12 or -13 runners does not have Docker toolbox.
-      # Thus we drop these OSes.
-      os-versions: '["ubuntu-22.04", "windows-2022"]'
+      # Furthermore windows runners fails to authenticate the client with a credential.
+      # Thus we drop these OSes from default OSes defined in setup-go-matrix workflow.
+      os-versions: '["ubuntu-22.04"]'

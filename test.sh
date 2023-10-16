@@ -1,7 +1,7 @@
 #!/bin/sh
 
 prog=$(basename "$0")
-if ! [ -S /var/run/docker.sock ]
+if ! docker info >/dev/null
 then
 	echo "$prog: there are no running docker" >&2
 	exit 2
