@@ -19,3 +19,6 @@ jobs:
     uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.0.2
     with:
       run: make test
+      # For now, neither macos-12 or -13 runners does not have Docker toolbox.
+      # Thus we drop these OSes.
+      os-versions: '["ubuntu-22.04", "windows-2022"]'
