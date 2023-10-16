@@ -10,4 +10,3 @@ test: testgo build
 .PHONY: testgo
 testgo:
 	go test -v ./...
-

@@ -12,33 +12,10 @@ env:
   DEBIAN_FRONTEND: noninteractive
 jobs:
   lint:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          args: --timeout 2m
+    uses: mackerelio/workflows/.github/workflows/go-lint.yml@v1.0.2
   test:
-    strategy:
-      matrix:
-        go: ["1.19.x", "1.18.x"]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/setup-go@v2
-      with:
-        go-version: ${{ matrix.go }}
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
-    - run: |
-        make test
-    - run: |
-        ./test.sh
+    uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.0.2
+  integration-test:
+    uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.0.2
+    with:
+      run: make test
