@@ -4,13 +4,13 @@ updates:
     directory: /
     schedule:
       interval: weekly
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
     groups:
       dependencies:
         patterns:
           - "*"
         exclude-patterns:
           - "go.mongodb.org/mongo-driver"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
