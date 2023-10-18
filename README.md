@@ -41,3 +41,7 @@ see https://dba.stackexchange.com/questions/121832/db-serverstatus-got-not-autho
 
 * `v1.1.0` mongodb 3.6, 4.0, 4.2, 4.4, 5.0, 6.0 or later
 * `v1.0.0` mongodb 2.2, 2.6, 3.0, 3.2, 3.4, 3.6, 4.0, 4.2
+
+## Supported Operating Systems
+
+* Linux
