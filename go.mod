@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.2
 	github.com/mackerelio/golib v1.2.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	go.mongodb.org/mongo-driver v1.14.0
 	golang.org/x/text v0.14.0
 )
