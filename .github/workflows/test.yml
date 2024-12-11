@@ -12,11 +12,11 @@ env:
   DEBIAN_FRONTEND: noninteractive
 jobs:
   lint:
-    uses: mackerelio/workflows/.github/workflows/go-lint.yml@v1.1.0
+    uses: mackerelio/workflows/.github/workflows/go-lint.yml@v1.2.0
   test:
-    uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.1.0
+    uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.2.0
   integration-test:
-    uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.1.0
+    uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.2.0
     with:
       run: make testmetric
       # For now, neither macos-12 or -13 runners does not have Docker toolbox.
