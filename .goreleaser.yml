@@ -1,3 +1,4 @@
+version: 2
 builds:
   - binary: mackerel-plugin-mongodb
     goos:
@@ -6,7 +7,8 @@ builds:
       - amd64
       - arm64
 archives:
-  - format: zip
+  - formats:
+      - zip
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 release:
   github:
