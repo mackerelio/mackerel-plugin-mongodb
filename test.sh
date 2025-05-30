@@ -21,7 +21,7 @@ password=passpass
 port=27017
 status=0
 
-for v in 6.0 5.0 4.4 4.2 4.0 3.6
+for v in 8.0 7.0 6.0 5.0 4.4 4.2 4.0 3.6
 do
   docker run -d \
 	--name "test-$plugin" \
