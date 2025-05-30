@@ -1,6 +1,8 @@
 module github.com/mackerelio/mackerel-plugin-mongodb
 
-go 1.18
+go 1.23.0
+
+toolchain go1.24.3
 
 require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.3
