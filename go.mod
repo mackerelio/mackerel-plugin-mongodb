@@ -7,9 +7,9 @@ toolchain go1.24.3
 require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.3
 	github.com/mackerelio/golib v1.2.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.mongodb.org/mongo-driver v1.15.0
-	golang.org/x/text v0.22.0
+	golang.org/x/text v0.25.0
 )
 
 require (
@@ -26,7 +26,7 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	golang.org/x/crypto v0.35.0 // indirect
-	golang.org/x/sync v0.11.0 // indirect
+	golang.org/x/sync v0.14.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
