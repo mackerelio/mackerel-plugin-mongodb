@@ -8,7 +8,7 @@ require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.3
 	github.com/mackerelio/golib v1.2.1
 	github.com/stretchr/testify v1.10.0
-	go.mongodb.org/mongo-driver v1.17.3
+	go.mongodb.org/mongo-driver v1.17.4
 	golang.org/x/text v0.25.0
 )
 
