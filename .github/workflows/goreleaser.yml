@@ -6,4 +6,4 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+"
 jobs:
   goreleaser:
-    uses: mackerelio/workflows/.github/workflows/goreleaser.yml@v1.5.0
+    uses: mackerelio/workflows/.github/workflows/goreleaser.yml@c7e130d3908894f18068ca4a877e80539b535881 # v1.5.0
