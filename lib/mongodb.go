@@ -32,7 +32,7 @@ func getFloatValue(s map[string]interface{}, keys []string) (float64, error) {
 			case bson.M:
 				sm = sm[k].(bson.M)
 			default:
-				return 0, fmt.Errorf("Cannot handle as a hash for %s", k)
+				return 0, fmt.Errorf("Cannot handle as a hash for %s", k) // nolint
 			}
 		} else {
 			val, err = strconv.ParseFloat(fmt.Sprint(sm[k]), 64)
@@ -93,7 +93,7 @@ func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
 	if m.Verbose {
 		str, err := json.Marshal(serverStatus)
 		if err != nil {
-			fmt.Println(fmt.Errorf("Marshaling error: %s", err.Error()))
+			fmt.Println(fmt.Errorf("Marshaling error: %s", err.Error())) // nolint
 		}
 		fmt.Println(string(str))
 	}
@@ -176,7 +176,7 @@ func (m MongoDBPlugin) MetricKeyPrefix() string {
 }
 
 func (m MongoDBPlugin) LabelPrefix() string {
-	return cases.Title(language.Und, cases.NoLower).String(strings.Replace(m.MetricKeyPrefix(), defaultPrefix, "MongoDB", -1))
+	return cases.Title(language.Und, cases.NoLower).String(strings.ReplaceAll(m.MetricKeyPrefix(), defaultPrefix, "MongoDB"))
 }
 
 // Do the plugin
