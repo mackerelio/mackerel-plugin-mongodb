@@ -9,7 +9,7 @@ require (
 	github.com/mackerelio/golib v1.2.1
 	github.com/stretchr/testify v1.11.1
 	go.mongodb.org/mongo-driver v1.17.7
-	golang.org/x/text v0.33.0
+	golang.org/x/text v0.34.0
 )
 
 require (
