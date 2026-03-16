@@ -73,7 +73,7 @@ func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
 		}
 	}
 
-	client, err := mongo.Connect(ctx, opts)
+	client, err := mongo.Connect(opts)
 	if err != nil {
 		return nil, err
 	}
