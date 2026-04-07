@@ -73,7 +73,11 @@ func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
 		}
 	}
 
-	client, err := mongo.Connect(ctx, opts)
+	opts = opts.SetBSONOptions(&options.BSONOptions{
+		DefaultDocumentM: true,
+	})
+
+	client, err := mongo.Connect(opts)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package mpmongodb
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -36,9 +37,10 @@ func TestParse36(t *testing.T) {
 		t.Errorf("Error: %s", err.Error())
 	}
 	var m bson.M
-	err = bson.Unmarshal(bsonStats, &m)
-	if err != nil {
-		t.Errorf("Error: %s", err.Error())
+	decoder := bson.NewDecoder(bson.NewDocumentReader(bytes.NewReader(bsonStats)))
+	decoder.DefaultDocumentM()
+	if err = decoder.Decode(&m); err != nil {
+		t.Error(err)
 	}
 
 	stat, err := mongodb.parseStatus(m)
