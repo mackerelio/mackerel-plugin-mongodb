@@ -3,9 +3,9 @@ build:
 	go build -o mackerel-plugin-mongodb
 
 .PHONY: test
-test: testgo testmetric
+test: testgo metrictest
 
-.PHONY: testmetric
+.PHONY: metrictest
 metrictest: build
 	go install github.com/lufia/graphitemetrictest/cmd/graphite-metric-test@latest
 	./test.sh
