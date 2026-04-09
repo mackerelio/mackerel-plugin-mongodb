@@ -22,7 +22,7 @@ import (
 
 var logger = logging.GetLogger("metrics.plugin.mongodb")
 
-func getFloatValue(s map[string]interface{}, keys []string) (float64, error) {
+func getFloatValue(s map[string]any, keys []string) (float64, error) {
 	var val float64
 	sm := s
 	var err error
@@ -101,7 +101,7 @@ func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
 }
 
 // FetchMetrics interface for mackerelplugin
-func (m MongoDBPlugin) FetchMetrics() (map[string]interface{}, error) {
+func (m MongoDBPlugin) FetchMetrics() (map[string]any, error) {
 	serverStatus, err := m.fetchStatus()
 	if err != nil {
 		return nil, err
@@ -109,8 +109,8 @@ func (m MongoDBPlugin) FetchMetrics() (map[string]interface{}, error) {
 	return m.parseStatus(serverStatus)
 }
 
-func (m MongoDBPlugin) parseStatus(serverStatus bson.M) (map[string]interface{}, error) {
-	stat := make(map[string]interface{})
+func (m MongoDBPlugin) parseStatus(serverStatus bson.M) (map[string]any, error) {
+	stat := make(map[string]any)
 
 	//Adapt to version 3.2 or higher.
 	//Check in version 3.6.
