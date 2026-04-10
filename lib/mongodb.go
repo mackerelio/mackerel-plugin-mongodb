@@ -13,9 +13,9 @@ import (
 
 	mp "github.com/mackerelio/go-mackerel-plugin-helper"
 	"github.com/mackerelio/golib/logging"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -73,7 +73,11 @@ func (m MongoDBPlugin) fetchStatus() (bson.M, error) {
 		}
 	}
 
-	client, err := mongo.Connect(ctx, opts)
+	opts = opts.SetBSONOptions(&options.BSONOptions{
+		DefaultDocumentM: true,
+	})
+
+	client, err := mongo.Connect(opts)
 	if err != nil {
 		return nil, err
 	}
