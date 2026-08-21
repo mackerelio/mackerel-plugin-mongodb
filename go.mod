@@ -5,17 +5,15 @@ go 1.25.0
 require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.4
 	github.com/mackerelio/golib v1.2.2
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.0
 	go.mongodb.org/mongo-driver/v2 v2.8.0
-	golang.org/x/text v0.40.0
+	golang.org/x/text v0.41.0
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/klauspost/compress v1.17.6 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.2.0 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
